@@ -1,0 +1,39 @@
+{
+  "type": "datasource",
+  "name": "aws-s3",
+  "id": "tvarit-aws-s3",
+  "metrics": true,
+  "info": {
+    "description": "AWS S3 Datasource Plugin",
+    "author": {
+      "name": "Kamal Galrani",
+      "url": "http://github.com/KamalGalrani"
+    },
+    "keywords": [
+      "aws",
+      "s3",
+      "datasource"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/tvarit-foggy/grafana-s3-plugin"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/tvarit-foggy/grafana-s3-plugin/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaVersion": "6.5.x",
+    "plugins": []
+  }
+}
