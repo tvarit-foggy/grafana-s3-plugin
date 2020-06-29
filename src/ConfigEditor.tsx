@@ -15,7 +15,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
     const jsonData: any = {
       ...options.jsonData,
     };
-    jsonData[what] = event.target.value
+    jsonData[what] = event.target.value;
     onOptionsChange({ ...options, jsonData });
   };
 
@@ -23,7 +23,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
   onSecureOptionChange = (what: string) => (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
     const secureJsonData: any = {};
-    secureJsonData[what] = event.target.value
+    secureJsonData[what] = event.target.value;
     onOptionsChange({
       ...options,
       secureJsonData,
