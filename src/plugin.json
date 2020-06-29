@@ -11,8 +11,8 @@
   "info": {
     "description": "AWS S3 Datasource Plugin",
     "author": {
-      "name": "Kamal Galrani",
-      "url": "http://github.com/KamalGalrani"
+      "name": "Tvarit GmbH",
+      "url": "https://tvarit.com"
     },
     "keywords": [
       "aws",
@@ -20,10 +20,14 @@
       "datasource"
     ],
     "logos": {
-      "small": "img/logo.svg",
-      "large": "img/logo.svg"
+      "small": "img/logo.png",
+      "large": "img/logo.png"
     },
     "links": [
+      {
+        "name": "Tvarit GmbH",
+        "url": "https://tvarit.com"
+      },
       {
         "name": "Website",
         "url": "https://github.com/tvarit-foggy/grafana-s3-plugin"
@@ -39,7 +43,7 @@
   },
 
   "dependencies": {
-    "grafanaVersion": "6.5.x",
+    "grafanaVersion": "7.x.x",
     "plugins": []
   }
 }
