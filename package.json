@@ -1,6 +1,6 @@
 {
   "name": "tvarit-s3-datasource",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "AWS S3 Datasource Plugin",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
