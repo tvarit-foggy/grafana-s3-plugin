@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "AWS S3",
-  "id": "tvarit-aws-s3",
+  "id": "tvarit-s3-datasource",
   "category": "cloud",
 
   "metrics": true,
