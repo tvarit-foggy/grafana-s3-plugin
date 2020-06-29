@@ -23,12 +23,7 @@ export class QueryEditor extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const {
-      compression,
-      format,
-      json_type,
-      csv_file_header_info
-    } = defaults(this.props.query, defaultQuery)
+    const { compression, format, json_type, csv_file_header_info } = defaults(this.props.query, defaultQuery);
 
     this.state = {
       compression: { label: compression, value: compression },
@@ -42,7 +37,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     const { onChange, query, onRunQuery } = this.props;
 
     const _query: any = {
-      ...query
+      ...query,
     };
     _query[what] = event.target.value;
     onChange(_query);
@@ -55,7 +50,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     const { onChange, query, onRunQuery } = this.props;
 
     const _query: any = {
-      ...query
+      ...query,
     };
     _query[what] = value.value;
     onChange(_query);
@@ -72,7 +67,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     const { onChange, query, onRunQuery } = this.props;
 
     const _query: any = {
-      ...query
+      ...query,
     };
     _query[what] = !_query[what];
     onChange(_query);
@@ -93,12 +88,7 @@ export class QueryEditor extends PureComponent<Props, State> {
       csv_record_delimiter,
     } = defaults(this.props.query, defaultQuery);
 
-    const {
-      compression,
-      format,
-      json_type,
-      csv_file_header_info,
-    } = this.state;
+    const { compression, format, json_type, csv_file_header_info } = this.state;
 
     const sectionHeader = css`
       margin: 8px 0px 4px 8px;
@@ -107,11 +97,13 @@ export class QueryEditor extends PureComponent<Props, State> {
 
     return (
       <>
-        <div className="gf-form" style={{flexWrap: 'wrap'}}>
+        <div className="gf-form" style={{ flexWrap: 'wrap' }}>
           <FormField
             labelWidth={10}
             inputWidth={0}
-            className={css`flex-grow: 1;`}
+            className={css`
+              flex-grow: 1;
+            `}
             value={path}
             onChange={this.onInputChange('path')}
             label="Path"
@@ -121,46 +113,41 @@ export class QueryEditor extends PureComponent<Props, State> {
             labelWidth={10}
             label="Format"
             tooltip="Describes the format of the data in the object that is being queried."
-            inputEl={(
-              <Select
-                width={10}
-                options={FileFormats}
-                value={format}
-                onChange={this.onSelectChange('format')}
-              />
-            )}
+            inputEl={
+              <Select width={10} options={FileFormats} value={format} onChange={this.onSelectChange('format')} />
+            }
           />
           <FormField
             labelWidth={10}
             label="Compression"
             tooltip="Specifies object's compression format."
-            inputEl={(
+            inputEl={
               <Select
                 width={9}
                 options={CompressionTypes}
                 value={compression}
                 onChange={this.onSelectChange('compression')}
               />
-            )}
+            }
           />
         </div>
         <div className="gf-form gf-form--grow">
           <FormField
             labelWidth={10}
             inputWidth={0}
-            className={css`flex-grow: 1;`}
+            className={css`
+              flex-grow: 1;
+            `}
             value={query}
             onChange={this.onInputChange('query')}
             label="Query"
             tooltip="The expression that is used to query the object."
           />
         </div>
-        {format.value == 'CSV' && (
+        {format.value === 'CSV' && (
           <>
-            <div className={sectionHeader}>
-              CSV Details
-            </div>
-            <div className="gf-form" style={{flexWrap: 'wrap'}}>
+            <div className={sectionHeader}>CSV Details</div>
+            <div className="gf-form" style={{ flexWrap: 'wrap' }}>
               <FormField
                 labelWidth={15}
                 inputWidth={5}
@@ -173,14 +160,14 @@ export class QueryEditor extends PureComponent<Props, State> {
                 labelWidth={15}
                 label="File Header Info"
                 tooltip="Describes the first line of input."
-                inputEl={(
+                inputEl={
                   <Select
                     width={5}
                     options={CsvFileHeaderInfo}
                     value={csv_file_header_info}
                     onChange={this.onSelectChange('csv_file_header_info')}
                   />
-                )}
+                }
               />
               <FormField
                 labelWidth={15}
@@ -188,7 +175,7 @@ export class QueryEditor extends PureComponent<Props, State> {
                 value={csv_quote_character}
                 onChange={this.onInputChange('csv_quote_character')}
                 label="Quote Character"
-                tooltip="A single character used for escaping when the field delimiter is part of the value. For example, if the value is a, b, Amazon S3 wraps this field value in quotation marks, as follows: &quot; a , b &quot;."
+                tooltip='A single character used for escaping when the field delimiter is part of the value. For example, if the value is a, b, Amazon S3 wraps this field value in quotation marks, as follows: " a , b ".'
               />
               <FormField
                 labelWidth={15}
@@ -196,7 +183,7 @@ export class QueryEditor extends PureComponent<Props, State> {
                 value={csv_quote_escape_character}
                 onChange={this.onInputChange('csv_quote_escape_character')}
                 label="Quote Escape Character"
-                tooltip="A single character used for escaping the quotation mark character inside an already escaped value. For example, the value &quot;&quot;&quot; a , b &quot;&quot;&quot; is parsed as &quot; a , b &quot;."
+                tooltip='A single character used for escaping the quotation mark character inside an already escaped value. For example, the value """ a , b """ is parsed as " a , b ".'
               />
               <FormField
                 labelWidth={15}
@@ -218,35 +205,33 @@ export class QueryEditor extends PureComponent<Props, State> {
                 labelWidth={15}
                 label="Allow Quoted Record Delimiter"
                 tooltip="Specifies that CSV field values may contain quoted record delimiters and such records should be allowed. Default value is FALSE. Setting this value to TRUE may lower performance."
-                inputEl={(
+                inputEl={
                   <Switch
                     label=""
                     checked={csv_allow_quoted_record_delimiter}
                     onChange={this.onSwitchChange('csv_allow_quoted_record_delimiter')}
                   />
-                )}
+                }
               />
             </div>
           </>
         )}
-        {format.value == 'JSON' && (
+        {format.value === 'JSON' && (
           <>
-            <div className={sectionHeader}>
-              JSON Details
-            </div>
+            <div className={sectionHeader}>JSON Details</div>
             <div className="gf-form">
               <FormField
                 labelWidth={15}
                 label="Type"
                 tooltip="The type of JSON."
-                inputEl={(
+                inputEl={
                   <Select
                     width={10}
                     options={JsonTypes}
                     value={json_type}
                     onChange={this.onSelectChange('json_type')}
                   />
-                )}
+                }
               />
             </div>
           </>
