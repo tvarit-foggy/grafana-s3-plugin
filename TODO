@@ -1,0 +1,19 @@
+# TODO
+
+### Frontend
+
+* [ConfigEditor] Add Explorer: https://github.com/awslabs/aws-js-s3-explorer/tree/v2-alpha
+* [ConfigEditor] Convert region to dropdown
+* [Dashboard] Add Explorer: https://github.com/awslabs/aws-js-s3-explorer/tree/v2-alpha
+
+### Backend
+
+* Make time parser more efficient
+* Make it dummy proof (Check for cases where user doesn't enter bucket etc)
+* Write health check code
+
+### CI/CD
+
+* Convert CI/CD stuff from .circleci to Jenkins
+* Write unittests
+* Make release pipeline
