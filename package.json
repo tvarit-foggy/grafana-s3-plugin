@@ -1,5 +1,5 @@
 {
-  "name": "tvarit-aws-s3",
+  "name": "tvarit-s3-datasource",
   "version": "1.0.0",
   "description": "AWS S3 Datasource Plugin",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
-  "author": "Kamal Galrani",
+  "author": "Tvarit GmbH",
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "7.0.1",
