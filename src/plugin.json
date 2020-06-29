@@ -1,8 +1,13 @@
 {
   "type": "datasource",
-  "name": "aws-s3",
+  "name": "AWS S3",
   "id": "tvarit-aws-s3",
+  "category": "cloud",
+
   "metrics": true,
+  "backend": true,
+  "executable": "gpx_s3_plugin",
+
   "info": {
     "description": "AWS S3 Datasource Plugin",
     "author": {
@@ -32,6 +37,7 @@
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
+
   "dependencies": {
     "grafanaVersion": "6.5.x",
     "plugins": []
