@@ -8,6 +8,23 @@ To install, download zip file from release page (for stable version) or download
 grafana-cli --pluginUrl <path_to_zip_file> plugins install tvarit-s3-datasource
 ```
 
+The plugin is not signed. To enable this plugin, change the following
+
+```
+[plugins]
+...
+# Enter a comma-separated list of plugin identifiers to identify plugins that are allowed to be loaded even if they lack a valid signature.
+allow_loading_unsigned_plugins =
+```
+to
+
+```
+[plugins]
+...
+# Enter a comma-separated list of plugin identifiers to identify plugins that are allowed to be loaded even if they lack a valid signature.
+allow_loading_unsigned_plugins = tvarit-s3-datasource
+```
+
 ### Screenshots
 ![Config Editor](src/img/config.png?raw=true "Config Editor")
 ![Query Editor](src/img/query.png?raw=true "Query Editor")
