@@ -5,7 +5,7 @@ This plugin queries files on AWS S3 using S3 Select API
 ### Installation
 To install, download zip file from release page (for stable version) or download repository as zip file (for installing from git master)
 ```
-./bin/grafana-cli --pluginUrl <path_to_zip_file> plugins install tvarit-s3-datasource
+grafana-cli --pluginUrl <path_to_zip_file> plugins install tvarit-s3-datasource
 ```
 
 ### Screenshots
