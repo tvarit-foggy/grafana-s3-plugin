@@ -111,6 +111,9 @@ type queryModel struct {
 	CSVQuoteEscapeCharacter       string `json:"csv_quote_escape_character"`
 	CSVRecordDelimiter            string `json:"csv_record_delimiter"`
 	JSONType                      string `json:"json_type"`
+	JSONTimeField                 string `json:"json_time_field"`
+	JSONTimeMonthFirst            bool   `json:"json_time_month_first"`
+	JSONTimeBucket                int64  `json:"json_time_bucket"`
 }
 
 func (td *S3DataSource) params(query *queryModel) *s3.SelectObjectContentInput {
@@ -119,7 +122,9 @@ func (td *S3DataSource) params(query *queryModel) *s3.SelectObjectContentInput {
 		Key: aws.String(query.Path),
 		ExpressionType: aws.String(s3.ExpressionTypeSql),
 		Expression: aws.String(query.Query),
-		InputSerialization: &s3.InputSerialization{},
+		InputSerialization: &s3.InputSerialization{
+			CompressionType: aws.String(query.Compression),
+                },
 		OutputSerialization: &s3.OutputSerialization{
 			JSON: &s3.JSONOutput{
 				RecordDelimiter: aws.String(","),
@@ -155,6 +160,32 @@ func (td *S3DataSource) params(query *queryModel) *s3.SelectObjectContentInput {
 			params.InputSerialization.JSON.Type = aws.String(query.JSONType)
 		}
 		break
+	}
+
+	return params
+}
+
+func (td *S3DataSource) json_time_params(query *queryModel) *s3.SelectObjectContentInput {
+	if query.Format != "JSON" || query.JSONTimeField == "" || query.JSONTimeBucket <= 0 {
+		return nil
+	}
+
+	params := &s3.SelectObjectContentInput{
+		Bucket: aws.String(td.settings.Bucket),
+		Key: aws.String(query.Path),
+		ExpressionType: aws.String(s3.ExpressionTypeSql),
+		Expression: aws.String(query.JSONTimeField),
+		InputSerialization: &s3.InputSerialization{
+			JSON: &s3.JSONInput{
+				Type: aws.String(query.JSONType),
+			},
+			CompressionType: aws.String(query.Compression),
+                },
+		OutputSerialization: &s3.OutputSerialization{
+			JSON: &s3.JSONOutput{
+				RecordDelimiter: aws.String(","),
+			},
+		},
 	}
 
 	return params
@@ -210,7 +241,7 @@ func isTimeColumn(series []*string) (bool, *[]time.Time) {
 	return false, nil
 }
 
-func (td *S3DataSource) s3Select(ctx context.Context, params *s3.SelectObjectContentInput) (*data.Frame, error) {
+func (td *S3DataSource) _s3Select(ctx context.Context, params *s3.SelectObjectContentInput) (*qframe.QFrame, error) {
 	resp, err := td.svc.SelectObjectContentWithContext(ctx, params)
 	if err != nil {
 		return nil, err
@@ -239,7 +270,16 @@ func (td *S3DataSource) s3Select(ctx context.Context, params *s3.SelectObjectCon
 	}
 
 	payload = append(payload[:len(payload) - 1], ']')
-	df_wo_types := qframe.ReadJSON(bytes.NewReader(payload))
+	df := qframe.ReadJSON(bytes.NewReader(payload))
+
+	return &df, nil
+}
+
+func (td *S3DataSource) s3Select(ctx context.Context, params *s3.SelectObjectContentInput) (*data.Frame, error) {
+	df_wo_types, err := td._s3Select(ctx, params)
+	if err != nil {
+		return nil, err
+	}
 
 	// The following hack guesses parameter types
 	reader, writer := io.Pipe()
@@ -255,28 +295,85 @@ func (td *S3DataSource) s3Select(ctx context.Context, params *s3.SelectObjectCon
 
 	for column, datatype := range df.ColumnTypeMap() {
 		switch datatype {
-		case "float":
+		case "int":
+			view, err := df.IntView(column)
+			if err != nil {
+				return nil, err
+			}
+			iseries := view.Slice()
+			series := make([]int64, len(iseries))
+			for i, v := range iseries {
+				series[i] = int64(v)
+			}
 			frame.Fields = append(frame.Fields,
-		                data.NewField(column, nil, df.MustFloatView(column).Slice()),
+		                data.NewField(column, nil, series),
+		        )
+		case "float":
+			view, err := df.FloatView(column)
+			if err != nil {
+				return nil, err
+			}
+			frame.Fields = append(frame.Fields,
+		                data.NewField(column, nil, view.Slice()),
 		        )
 		case "string":
-			seriesString := df.MustStringView(column).Slice()
+			view, err := df.StringView(column)
+			if err != nil {
+				return nil, err
+			}
 
-			isTime, seriesTime := isTimeColumn(seriesString)
+			isTime, series := isTimeColumn(view.Slice())
 
 			if isTime {
 				frame.Fields = append(frame.Fields,
-			                data.NewField(column, nil, *seriesTime),
+			                data.NewField(column, nil, *series),
 			        )
 			} else {
 				frame.Fields = append(frame.Fields,
-			                data.NewField(column, nil, seriesString),
+			                data.NewField(column, nil, view.Slice()),
 			        )
 			}
 		}
 	}
 
 	return frame, nil
+}
+
+func (td *S3DataSource) s3SelectTime(ctx context.Context, params *s3.SelectObjectContentInput, query *queryModel, frame *data.Frame) error {
+	df_wo_types, err := td._s3Select(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	if df_wo_types.Len() == 0 {
+		return fmt.Errorf("Unable to fetch time field!")
+	}
+
+	column := df_wo_types.ColumnNames()[0]
+	view, err := df_wo_types.StringView(column)
+	if err != nil {
+		return err
+	}
+
+	timestamp, err := dateparse.ParseAny(*view.ItemAt(0), query.JSONTimeMonthFirst)
+	if err != nil {
+		return err
+	}
+
+	series := make([]time.Time, 0)
+	for i := 0; i < frame.Rows(); i++ {
+		series = append(series, timestamp.Add(time.Duration(int64(i) * query.JSONTimeBucket) * time.Nanosecond))
+	}
+
+	if column == "_1" {
+		column = "time"
+	}
+
+	frame.Fields = append(frame.Fields,
+                data.NewField(column, nil, series),
+        )
+
+	return nil
 }
 
 func (td *S3DataSource) query(ctx context.Context, query backend.DataQuery) backend.DataResponse {
@@ -289,10 +386,32 @@ func (td *S3DataSource) query(ctx context.Context, query backend.DataQuery) back
 		return response
 	}
 
+	// TODO: FIXME
+	//s, err := td.svc.ListObjectsV2WithContext(ctx, &s3.ListObjectsV2Input{
+        //        Bucket: aws.String(td.settings.Bucket),
+        //        Prefix: aws.String("PlantA/Ma"),
+	//	Delimiter: aws.String("/"),
+	//})
+	//log.DefaultLogger.Info("S3Select", "1111", err)
+	//for _, k := range s.CommonPrefixes {
+	//	log.DefaultLogger.Info("S3Select", "2222", k.Prefix)
+	//}
+	//for _, k := range s.Contents {
+	//	log.DefaultLogger.Info("S3Select", "3333", k.Key)
+	//}
+
 	params := td.params(&qm)
 	frame, response.Error = td.s3Select(ctx, params)
 	if response.Error != nil {
 		return response
+	}
+
+	json_time_params := td.json_time_params(&qm)
+	if frame.Rows() > 0 && json_time_params != nil {
+		response.Error = td.s3SelectTime(ctx, json_time_params, &qm, frame)
+		if response.Error != nil {
+			return response
+		}
 	}
 
 	response.Frames = append(response.Frames, frame)

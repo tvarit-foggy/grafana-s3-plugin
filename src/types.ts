@@ -13,6 +13,10 @@ export interface Query extends DataQuery {
   csv_quote_escape_character: string;
   csv_record_delimiter: string;
   json_type: string;
+  json_time_field_enable: boolean;
+  json_time_field: string;
+  json_time_month_first: boolean;
+  json_time_bucket: number;
 }
 
 export const defaultQuery: Partial<Query> = {
@@ -27,6 +31,10 @@ export const defaultQuery: Partial<Query> = {
   csv_quote_escape_character: '"',
   csv_record_delimiter: '\n',
   json_type: 'DOCUMENT',
+  json_time_field_enable: false,
+  json_time_field: '',
+  json_time_month_first: false,
+  json_time_bucket: 1000000,
 };
 
 /**

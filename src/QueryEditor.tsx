@@ -46,6 +46,19 @@ export class QueryEditor extends PureComponent<Props, State> {
     onRunQuery();
   };
 
+  onIntInputChange = (what: string) => (event: ChangeEvent<HTMLInputElement>) => {
+    const { onChange, query, onRunQuery } = this.props;
+
+    const _query: any = {
+      ...query,
+    };
+    _query[what] = parseInt(event.target.value, 10);
+    onChange(_query);
+
+    // executes the query
+    onRunQuery();
+  };
+
   onSelectChange = (what: string) => (value: SelectableValue<string>) => {
     const { onChange, query, onRunQuery } = this.props;
 
@@ -70,9 +83,12 @@ export class QueryEditor extends PureComponent<Props, State> {
       ...query,
     };
     _query[what] = !_query[what];
-    onChange(_query);
 
-    // executes the query
+    if (what === 'json_time_field_enable' && !_query[what]) {
+      _query['json_time_field'] = '';
+    }
+
+    onChange(_query);
     onRunQuery();
   };
 
@@ -86,6 +102,9 @@ export class QueryEditor extends PureComponent<Props, State> {
       csv_quote_character,
       csv_quote_escape_character,
       csv_record_delimiter,
+      json_time_field,
+      json_time_month_first,
+      json_time_bucket,
     } = defaults(this.props.query, defaultQuery);
 
     const { compression, format, json_type, csv_file_header_info } = this.state;
@@ -94,6 +113,8 @@ export class QueryEditor extends PureComponent<Props, State> {
       margin: 8px 0px 4px 8px;
       font-weight: 500;
     `;
+
+    let json_time_field_enable = this.props.query.json_time_field_enable || !!json_time_field;
 
     return (
       <>
@@ -221,7 +242,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             <div className={sectionHeader}>JSON Details</div>
             <div className="gf-form">
               <FormField
-                labelWidth={15}
+                labelWidth={10}
                 label="Type"
                 tooltip="The type of JSON."
                 inputEl={
@@ -233,7 +254,55 @@ export class QueryEditor extends PureComponent<Props, State> {
                   />
                 }
               />
+              <FormField
+                labelWidth={10}
+                label="Has Time Field?"
+                tooltip="Does the JSON have a field with packet timestamp"
+                inputEl={
+                  <Switch
+                    label=""
+                    checked={json_time_field_enable}
+                    onChange={this.onSwitchChange('json_time_field_enable')}
+                  />
+                }
+              />
             </div>
+            {json_time_field_enable && (
+              <div className="gf-form">
+                <FormField
+                  labelWidth={10}
+                  inputWidth={0}
+                  className={css`
+                    flex-grow: 1;
+                  `}
+                  value={json_time_field}
+                  onChange={this.onInputChange('json_time_field')}
+                  label="Time Field"
+                  tooltip="The expression that is used to query time field."
+                />
+                <FormField
+                  labelWidth={10}
+                  label="Month First"
+                  tooltip="Is time field month first?"
+                  inputEl={
+                    <Switch
+                      label=""
+                      checked={json_time_month_first}
+                      onChange={this.onSwitchChange('json_time_month_first')}
+                    />
+                  }
+                />
+                <FormField
+                  labelWidth={10}
+                  inputWidth={10}
+                  type="number"
+                  value={json_time_bucket}
+                  onChange={this.onIntInputChange('json_time_bucket')}
+                  label="Time Bucket"
+                  tooltip="Time difference between each entry within a packet in nanoseconds"
+                />
+              </div>
+            )}
           </>
         )}
       </>
