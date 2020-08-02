@@ -1,6 +1,6 @@
 {
   "name": "tvarit-s3-datasource",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "AWS S3 Datasource Plugin",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -12,12 +12,17 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "7.0.1",
-    "@grafana/toolkit": "7.0.1",
     "@grafana/runtime": "7.0.1",
+    "@grafana/toolkit": "7.0.1",
     "@grafana/ui": "7.0.1",
     "@types/lodash": "latest"
   },
   "engines": {
     "node": ">=12 <13"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@types/jquery": "^3.5.1",
+    "aws-sdk": "^2.725.0"
   }
 }
