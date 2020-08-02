@@ -1,4 +1,4 @@
-# AWS S3 Plugin
+# AWS S3 Plugin [![tvarit-foggy](https://circleci.com/gh/tvarit-foggy/grafana-s3-plugin.svg?style=svg)](https://app.circleci.com/pipelines/github/tvarit-foggy/grafana-s3-plugin)
 
 This plugin queries files on AWS S3 using S3 Select API
 
