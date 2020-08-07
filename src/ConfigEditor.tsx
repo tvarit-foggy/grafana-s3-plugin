@@ -1,14 +1,25 @@
+import _ from 'lodash';
 import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms } from '@grafana/ui';
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { DataSourceOptions, SecureJsonData } from './types';
+import { DataSourcePluginOptionsEditorProps, SelectableValue } from '@grafana/data';
+import { DataSourceOptions, SecureJsonData, Regions } from './types';
 import { FileBrowser } from './FileBrowser';
 
-const { SecretFormField, FormField } = LegacyForms;
+const { SecretFormField, FormField, Select } = LegacyForms;
 
 interface Props extends DataSourcePluginOptionsEditorProps<DataSourceOptions> {}
 
-export class ConfigEditor extends PureComponent<Props> {
+interface State {
+  region: SelectableValue<string>;
+}
+
+export class ConfigEditor extends PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    const region = _.find(Regions, { value: props.options.jsonData.region }) || Regions[0];
+    this.state = { region: region };
+  }
+
   onOptionChange = (what: string) => (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
     const jsonData: any = {
@@ -16,6 +27,19 @@ export class ConfigEditor extends PureComponent<Props> {
     };
     jsonData[what] = event.target.value;
     onOptionsChange({ ...options, jsonData });
+  };
+
+  onSelectChange = (what: string) => (value: SelectableValue<string>) => {
+    const { onOptionsChange, options } = this.props;
+    const jsonData: any = {
+      ...options.jsonData,
+    };
+    jsonData[what] = value.value;
+    onOptionsChange({ ...options, jsonData });
+
+    const _state: any = {};
+    _state[what] = value;
+    this.setState(_state);
   };
 
   // Secure field (only sent to the backend)
@@ -47,6 +71,7 @@ export class ConfigEditor extends PureComponent<Props> {
   };
 
   render() {
+    const { region } = this.state;
     const { options } = this.props;
     const { jsonData, secureJsonFields } = options;
     const secureJsonData = (options.secureJsonData || {}) as SecureJsonData;
@@ -68,11 +93,8 @@ export class ConfigEditor extends PureComponent<Props> {
           <FormField
             label="Region"
             labelWidth={10}
-            inputWidth={20}
-            onChange={this.onOptionChange('region')}
-            value={jsonData.region || 'eu-central-1'}
-            placeholder="Region"
             required
+            inputEl={<Select width={20} options={Regions} value={region} onChange={this.onSelectChange('region')} />}
           />
         </div>
         <div className="gf-form">
@@ -103,7 +125,7 @@ export class ConfigEditor extends PureComponent<Props> {
         orgId={options.orgId}
         dsId={options.id}
         bucket={jsonData.bucket || ''}
-        region={jsonData.region || 'eu-central-1'}
+        region={jsonData.region || Regions[0].value}
       />,
     ];
   }

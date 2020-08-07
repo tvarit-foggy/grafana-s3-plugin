@@ -2,7 +2,6 @@
 
 ### Frontend
 
-* [ConfigEditor] Convert region to dropdown
 * [Dashboard] Add Explorer
 * [Dashboard] Add time filter
 
@@ -10,6 +9,7 @@
 
 * Make time parser more efficient
 * Make it dummy proof (Check for cases where user doesn't enter bucket etc)
+* Add cache
 
 ### CI/CD
 
