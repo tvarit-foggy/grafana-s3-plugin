@@ -1,0 +1,49 @@
+{
+  "type": "datasource",
+  "name": "AWS S3",
+  "id": "tvarit-s3-datasource",
+  "category": "cloud",
+
+  "metrics": true,
+  "backend": true,
+  "executable": "gpx_s3_plugin",
+
+  "info": {
+    "description": "AWS S3 Datasource Plugin",
+    "author": {
+      "name": "Tvarit GmbH",
+      "url": "https://tvarit.com"
+    },
+    "keywords": [
+      "aws",
+      "s3",
+      "datasource"
+    ],
+    "logos": {
+      "small": "img/logo.png",
+      "large": "img/logo.png"
+    },
+    "links": [
+      {
+        "name": "Tvarit GmbH",
+        "url": "https://tvarit.com"
+      },
+      {
+        "name": "Website",
+        "url": "https://github.com/tvarit-foggy/grafana-s3-plugin"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/tvarit-foggy/grafana-s3-plugin/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2020-08-07"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "7.x.x",
+    "plugins": []
+  }
+}
