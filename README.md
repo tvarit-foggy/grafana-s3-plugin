@@ -25,6 +25,27 @@ to
 allow_loading_unsigned_plugins = tvarit-s3-datasource
 ```
 
+### File Upload
+To allow file upload from inbuilt file browser, add the following CORS policy in the bucket permissions (replace <<<URL>>> with the url in your browser)
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+<CORSRule>
+    <AllowedOrigin><<<URL>>></AllowedOrigin>
+    <AllowedMethod>PUT</AllowedMethod>
+    <AllowedMethod>POST</AllowedMethod>
+    <AllowedMethod>DELETE</AllowedMethod>
+    <ExposeHeader>ETag</ExposeHeader>
+    <AllowedHeader>*</AllowedHeader>
+</CORSRule>
+<CORSRule>
+    <AllowedOrigin>*</AllowedOrigin>
+    <AllowedMethod>GET</AllowedMethod>
+</CORSRule>
+</CORSConfiguration>
+```
+
 ### Screenshots
 ![Config Editor](src/img/config.png?raw=true "Config Editor")
 ![Query Editor](src/img/query.png?raw=true "Query Editor")
